@@ -2,7 +2,7 @@
 
 My terminal environment as code: the tools, the fish configuration and the login
 shell. `deploy.py` is a [pyinfra](https://pyinfra.com) deploy that makes a machine
-match this repo — macOS via Homebrew, Debian via apt, locally or over SSH.
+match this repo — macOS via Homebrew, Debian via apt.
 
 ## What it does
 
@@ -19,58 +19,40 @@ match this repo — macOS via Homebrew, Debian via apt, locally or over SSH.
 
 Re-running completes whatever is missing and touches nothing already in place.
 
-## Bootstrap
-
-pyinfra is the one prerequisite — unlike the bash installer this replaces, the
-target needs Python first. A stock Debian or Raspberry Pi OS has neither uv nor
-pipx, and its Python is marked externally managed, so `pip install` is refused:
-
-    curl -LsSf https://astral.sh/uv/install.sh | sh    # uv, into ~/.local/bin
-    uv tool install pyinfra                            # or: pipx install pyinfra
-
-Both land in `~/.local/bin`, which fish only has on PATH via
-`config.local.fish` — so bootstrap from bash, or add it first.
-
 ## Run
 
-    pyinfra @local deploy.py --dry          # preview, changes nothing
-    pyinfra @local deploy.py                # this machine; shows the changes, then asks
-    pyinfra @local deploy.py -y             # the same, without the confirmation prompt
-    pyinfra username@pi.local deploy.py     # a machine over SSH
-    pyinfra @docker/debian:13 deploy.py     # clean Debian, end to end
+    ./bootstrap.sh --dry     # preview, changes nothing
+    ./bootstrap.sh           # apply; shows the changes, then asks
 
-`-y` is needed wherever there is no TTY — without it pyinfra exits with
-`EOFError` at the prompt. Do not combine it with `--dry`: `-y` skips change
-detection, so the preview reports `Skipping change detection` and nothing else.
+Nothing has to be installed first. On its first run `bootstrap.sh` puts pyinfra
+in a virtualenv under `~/.local/share/terminal-config-venv` using Python's own
+`venv` — no package manager, no sudo, and nothing added to `PATH`, so it also
+works in a shell whose fish config this repo has not linked yet. Debian needs
+`python3-venv` present; the script says so if it is missing. To move pyinfra
+forward, delete that directory and run again.
 
-A run with nothing to install needs no sudo at all. One that does — a missing
-package, or `/etc/shells` on a fresh machine — needs the password, and pyinfra
-decides to ask by matching sudo's own output against the English `sudo: a
-password is required`. On a system with another locale nothing matches, so
-instead of a prompt the host is dropped with `could not load fact`. Force the
-locale for the run:
-
-    env LC_ALL=C pyinfra @local deploy.py   # any non-English system
-
-Only pyinfra's own messages change. In fish this needs `env`; there is no
-inline `VAR=value command`.
+A run with nothing to install needs no sudo. One that does — a missing package,
+or `/etc/shells` on a fresh machine — asks for the password. `bootstrap.sh`
+forces `LC_ALL=C` so that it can: pyinfra decides whether to prompt by matching
+sudo's own output against the English `sudo: a password is required`, and under
+any other locale it never asks, dropping the host with `could not load fact`
+instead.
 
 ## Verify
 
-    pyinfra @local deploy.py --dry -vv      # the exact shell commands
-    pyinfra @local deploy.py                # apply, then run it again:
-    pyinfra @local deploy.py                # every operation must no-op
+    ./bootstrap.sh --dry -vv    # the exact shell commands
+    ./bootstrap.sh              # apply, then run it again:
+    ./bootstrap.sh              # every operation must no-op
     fish_indent --check fish/**/*.fish
 
-The Docker run prints an image ID; `pyinfra @docker/<id> deploy.py` then proves
-idempotency on a machine that started empty. Finally open a new terminal and
-check `l`, `ll`, `c README.md`, `g`, `z`, Ctrl-R, and that
-`readlink ~/.config/fish/functions` resolves into this repo.
+Then open a new terminal and check `l`, `ll`, `c README.md`, `g`, `z`, Ctrl-R,
+and that `readlink ~/.config/fish/functions` resolves into this repo.
 
 ## Layout
 
-    deploy.py    the whole installer; the TOOLS table is the part you edit
-    fish/        config.fish, conf.d/, functions/ — linked into ~/.config/fish
-    CLAUDE.md    conventions for working in here
+    bootstrap.sh  gets pyinfra, then runs deploy.py — the entry point
+    deploy.py     the whole installer; the TOOLS table is the part you edit
+    fish/         config.fish, conf.d/, functions/ — linked into ~/.config/fish
+    CLAUDE.md     conventions for working in here
 
 Why anything is the way it is: `git log --grep='^Decision:'`.
