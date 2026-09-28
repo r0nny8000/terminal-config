@@ -14,6 +14,7 @@ from pathlib import Path
 
 from pyinfra import host, logger
 from pyinfra.api.exceptions import DeployError
+from pyinfra.facts.deb import DebPackages
 from pyinfra.facts.files import File, FileContents, Link
 from pyinfra.facts.server import Arch, Command, Home, Kernel, User, Which
 from pyinfra.operations import apt, brew, files, server
@@ -154,20 +155,31 @@ if darwin:
         _ignore_errors=True,  # one unavailable formula must not stop the rest
     )
 else:
-    # Deliberately no _ignore_errors: apt is transactional, so a failure means
-    # the table is wrong and the Docker smoke test should go red.
-    apt.packages(
-        name="Install the tools from apt",
-        packages=sorted({package for _, package in TOOLS.values() if package}),
-        update=True,
-        cache_time=3600,
-        _sudo=sudo,
+    # Work out what is missing from a fact gathered without sudo, and declare the
+    # operation only when there is something to install. Every fact apt.packages
+    # gathers for itself inherits its _sudo — the dpkg list, and the update stamp
+    # that cache_time reads — so declaring it unconditionally asks for a sudo
+    # password on every run, including a --dry with nothing to do. Same reasoning
+    # as the /etc/shells gate below.
+    installed = host.get_fact(DebPackages)
+    missing = sorted(
+        {package for _, package in TOOLS.values() if package and package not in installed}
     )
+    if missing:
+        # Deliberately no _ignore_errors: apt is transactional, so a failure means
+        # the table is wrong and the Docker smoke test should go red.
+        apt.packages(
+            name="Install the tools from apt",
+            packages=missing,
+            update=True,
+            cache_time=3600,
+            _sudo=sudo,
+        )
 
     # raspi-utils-core exists only on Raspberry Pi OS; asking apt for it anywhere
     # else fails the whole transaction. Replaces install.sh's apt-cache probe.
     model = "".join(host.get_fact(FileContents, path="/proc/device-tree/model") or [])
-    if "Raspberry Pi" in model:
+    if "Raspberry Pi" in model and "raspi-utils-core" not in installed:
         apt.packages(
             name="Install vcgencmd for cpu --temp",
             packages=["raspi-utils-core"],
