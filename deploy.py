@@ -38,7 +38,7 @@ TOOLS = {
     "bat":         ("bat",          "bat"),                # apt installs it as batcat
     "cpu monitor": ("mactop",       "btop"),               # mactop is Apple Silicon only
     "sha256sum":   ("coreutils",    None),                 # gsha256sum; Debian has it
-    "zoxide":      ("zoxide",       "zoxide"),
+    "zoxide":      ("zoxide",       "zoxide"),             # trixie 0.9.7; 0.10.0 is in sid
     "bandwhich":   ("bandwhich",    None),                 # Debian: release archive, below
 }
 
