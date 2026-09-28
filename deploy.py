@@ -5,7 +5,6 @@ the login shell. Safe to re-run: it completes whatever is missing.
     pyinfra @local deploy.py              # this machine
     pyinfra @local deploy.py --dry        # show what would change, touch nothing
     pyinfra username@pi.local deploy.py   # a machine over SSH
-    pyinfra @docker/debian:13 deploy.py   # smoke test
 """
 
 import re
@@ -167,7 +166,8 @@ else:
     )
     if missing:
         # Deliberately no _ignore_errors: apt is transactional, so a failure means
-        # the table is wrong and the Docker smoke test should go red.
+        # TOOLS names a package this distribution does not have, and the run
+        # should stop and say so rather than carry on half-installed.
         apt.packages(
             name="Install the tools from apt",
             packages=missing,
