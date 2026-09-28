@@ -119,8 +119,20 @@ for entry in ENTRIES:
 # config.fish sources this unconditionally. Create it only when nothing is there
 # at all: it is usually a symlink to a synced file, and files.put would overwrite
 # it while files.file(touch=True) raises OperationError on a symlink.
+#
+# ~/.config/fish may still be the whole-repo symlink the old install.sh left.
+# files.directory above replaces it with an empty directory, but facts are
+# gathered before any operation runs — so a config.local.fish seen *through*
+# that link is one that is about to disappear. Treat it as absent.
+#
+# The fact is three-valued: a dict for a link, False for a path that exists and
+# is not one, None for nothing there. Only the dict means replacement, so test
+# truthiness — `is not None` also matches the real directory this leaves behind,
+# and would overwrite the file on every later run.
+fish_dir_replaced = bool(host.get_fact(Link, path=fish_dir))
+
 local_config = f"{fish_dir}/config.local.fish"
-if (
+if fish_dir_replaced or (
     host.get_fact(Link, path=local_config) is None
     and host.get_fact(File, path=local_config) is None
 ):
