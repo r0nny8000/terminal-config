@@ -43,6 +43,18 @@ Both land in `~/.local/bin`, which fish only has on PATH via
 `EOFError` at the prompt. Do not combine it with `--dry`: `-y` skips change
 detection, so the preview reports `Skipping change detection` and nothing else.
 
+A run with nothing to install needs no sudo at all. One that does — a missing
+package, or `/etc/shells` on a fresh machine — needs the password, and pyinfra
+decides to ask by matching sudo's own output against the English `sudo: a
+password is required`. On a system with another locale nothing matches, so
+instead of a prompt the host is dropped with `could not load fact`. Force the
+locale for the run:
+
+    env LC_ALL=C pyinfra @local deploy.py   # any non-English system
+
+Only pyinfra's own messages change. In fish this needs `env`; there is no
+inline `VAR=value command`.
+
 ## Verify
 
     pyinfra @local deploy.py --dry -vv      # the exact shell commands
