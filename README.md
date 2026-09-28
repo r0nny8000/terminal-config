@@ -22,9 +22,14 @@ Re-running completes whatever is missing and touches nothing already in place.
 ## Bootstrap
 
 pyinfra is the one prerequisite — unlike the bash installer this replaces, the
-target needs Python first.
+target needs Python first. A stock Debian or Raspberry Pi OS has neither uv nor
+pipx, and its Python is marked externally managed, so `pip install` is refused:
 
-    uv tool install pyinfra     # or: pipx install pyinfra
+    curl -LsSf https://astral.sh/uv/install.sh | sh    # uv, into ~/.local/bin
+    uv tool install pyinfra                            # or: pipx install pyinfra
+
+Both land in `~/.local/bin`, which fish only has on PATH via
+`config.local.fish` — so bootstrap from bash, or add it first.
 
 ## Run
 
