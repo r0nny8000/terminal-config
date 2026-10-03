@@ -14,7 +14,7 @@ match this repo — macOS via Homebrew, Debian via apt.
 3. Installs the tools the fish functions call, from the `TOOLS` table in
    `deploy.py`. On Debian, bandwhich comes from its release archive and
    `vcgencmd` only on a Raspberry Pi.
-4. Reports the tools no package manager has: claude, nerdctl, pyenv.
+4. Reports the tools no package manager has: claude, pyenv.
 5. Lists fish in `/etc/shells` and makes it the login shell.
 
 Re-running completes whatever is missing and touches nothing already in place.

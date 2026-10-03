@@ -45,7 +45,6 @@ TOOLS = {
 # No package manager has these: reported, never installed.
 MANUAL = {
     "claude":  "https://claude.com/claude-code",
-    "nerdctl": "https://github.com/containerd/nerdctl/releases",
     "python":  "https://github.com/pyenv/pyenv",
 }
 
