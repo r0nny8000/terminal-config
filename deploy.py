@@ -33,6 +33,7 @@ TOOLS = {
     "lsd":         ("lsd",          "lsd"),
     "glow":        ("glow",         "glow"),
     "fzf":         ("fzf",          "fzf"),
+    "tmux":        ("tmux",         "tmux"),
     "hostname":    (None,           "hostname"),
     "python":      (None,           "python-is-python3"),  # macOS: pyenv, see MANUAL
     "bat":         ("bat",          "bat"),                # apt installs it as batcat
