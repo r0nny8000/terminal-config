@@ -56,3 +56,5 @@ and that `readlink ~/.config/fish/functions` resolves into this repo.
     CLAUDE.md     conventions for working in here
 
 Why anything is the way it is: `git log --grep='^Decision:'`.
+
+:-)
