@@ -44,6 +44,13 @@ sudo's own output against the English `sudo: a password is required`, and under
 any other locale it never asks, dropping the host with `could not load fact`
 instead.
 
+On macOS, an app or font from `CASKS` that was installed by hand rather than by
+Homebrew makes every run fail on it, because Homebrew will not overwrite files
+it did not install. Hand it over to Homebrew once, then run again:
+
+    brew install --cask --adopt <cask>    # files identical to the cask's
+    brew install --cask --force <cask>    # otherwise: replace them
+
 ## Verify
 
     ./bootstrap.sh --dry -vv    # the exact shell commands
