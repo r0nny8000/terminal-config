@@ -160,6 +160,23 @@ if host.name == "@local":
             target=f"{fish_dir}/{entry}",
         )
 
+# Whole directories this repo owns under ~/.config, linked the same way as the
+# fish entries. foot is Wayland only, so macOS gets no foot config.
+config_dirs = [] if darwin else ["foot"]
+
+for name in config_dirs:
+    if host.name == "@local":
+        target = str(DEPLOY_DIR / name)
+    else:
+        target = f"{link_base}/{name}"
+        files.sync(name=f"Copy {name}", src=str(DEPLOY_DIR / name), dest=target, delete=True)
+    files.link(
+        name=f"Link ~/.config/{name} into the repo",
+        path=f"{config_home}/{name}",
+        target=target,
+        force=True,  # anything real there is moved to <path>.<timestamp>
+    )
+
 # --- tools -------------------------------------------------------------------
 
 if darwin:
