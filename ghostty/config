@@ -1,0 +1,18 @@
+#   ~/Library/Application Support/com.mitchellh.ghostty/config
+
+shell-integration-features = no-cursor
+
+font-family = "0xProto Nerd Font Mono"
+font-size = 14
+
+theme = TokyoNight Night
+# theme = Catppuccin Mocha
+cursor-style = block
+cursor-style-blink
+
+scrollback-limit = 134217728
+
+background-opacity = 0.96
+background-blur-radius = 16
+
+mouse-hide-while-typing = true
