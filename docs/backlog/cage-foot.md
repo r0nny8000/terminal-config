@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented, awaiting the user's run and monitor check
 priority: medium
 acceptance:
   - In foot on tty1, `echo $COLORTERM` prints truecolor and `colors` shows a smooth gradient.
@@ -41,7 +41,7 @@ configured by `deploy.py`, like everything else here.
 | `deploy.py`                | link `~/.config/foot` to `foot/` in the repo (copied first for non-local hosts); skip on macOS                        |
 | `foot/foot.ini`            | `include=/usr/share/foot/themes/tokyonight-night`; font left at foot's default                                        |
 | `fish/functions/term.fish` | reads XKBLAYOUT, XKBVARIANT, XKBOPTIONS from `/etc/default/keyboard`, exports them as XKB_DEFAULT_*, runs `cage foot` |
-| `tmux/tmux.conf` + link    | `terminal-features` RGB for `foot*`; `COLORTERM` passed into panes                                                    |
+| `tmux/tmux.conf` + link    | `COLORTERM` refreshed into panes on attach; no RGB entry needed (tested)                                              |
 | `README.md`                | What it does, Layout: the foot and tmux entries                                                                       |
 
 Commits, one concern each: tools; foot config + link; launcher; tmux config +
@@ -61,17 +61,19 @@ owning more than fish config.
 | Risk                                                                   | Mitigation                                                                    |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | cage and foot pull Wayland libraries onto headless Debian machines too | accept: small, and TOOLS has no per-machine gating besides the Pi model check |
-| tmux started outside foot keeps 256 colours                            | expected; RGB is declared for `foot*` only                                    |
+| tmux attached from the plain console has no 24-bit                     | expected; update-environment drops COLORTERM there                            |
 | Whether tmux 3.5a sets `COLORTERM` itself is unverified                | test first; add it to `update-environment` only if needed                     |
 | Second user andre gets the same links on a fresh bootstrap             | push before he tests (Claude cannot read his home)                            |
 
 ## Checklist
 
 - [x] Decide the three open points.
-- [ ] Reproduce first: tmux in foot shows a striped gradient in `colors`.
-- [ ] TOOLS rows; deploy installs foot-themes.
-- [ ] `foot/foot.ini` and the `~/.config/foot` link.
-- [ ] Launcher function `term` with the keyboard values.
-- [ ] tmux config and link.
-- [ ] README.
+- [x] Reproduce first. Result: 24-bit passes through tmux unchanged; only a
+      pane opened after attaching to an older server loses COLORTERM.
+- [x] TOOLS rows (63517f3).
+- [x] `foot/foot.ini` and the `~/.config/foot` link (ef709a5).
+- [x] Launcher function `term` with the keyboard values (0b8fbda).
+- [x] tmux config and link (c7387fb).
+- [x] README (6e3912e).
+- [ ] User: `./bootstrap.sh` twice (installs foot-themes, needs sudo), then the monitor checks.
 - [ ] All acceptance criteria in the header pass; the monitor checks by the user.
