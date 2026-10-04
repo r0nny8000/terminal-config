@@ -13,10 +13,13 @@ match this repo — macOS via Homebrew, Debian via apt.
    secrets and machine-specific values. Under `@local`, `fish/config.local.fish`
    and `fish/fish_variables` in this checkout link back to the real files in
    `~/.config/fish`, so every fish config is visible here; both are gitignored.
-3. Links `~/.config/tmux` into this repo, and on Linux `~/.config/foot` too.
+3. Links `~/.config/tmux` into this repo, plus `~/.config/foot` on Linux and
+   `~/.config/ghostty` on macOS. On macOS it also removes the old link that the
+   retired ghostty-config repo left in Ghostty's Application Support folder.
 4. Installs the tools the fish functions call, from the `TOOLS` table in
    `deploy.py`. On Debian, bandwhich comes from its release archive and
-   `vcgencmd` only on a Raspberry Pi.
+   `vcgencmd` only on a Raspberry Pi. On macOS, Ghostty and its font come
+   from the `CASKS` list.
 5. Reports the tools no package manager has: claude, pyenv.
 6. Lists fish in `/etc/shells` and makes it the login shell.
 
@@ -61,6 +64,7 @@ On the Pi's own screen, log in and type `term`: foot opens full-screen with
     fish/         config.fish, conf.d/, functions/ — linked into ~/.config/fish;
                   config.local.fish, fish_variables — untracked links back out
     foot/         foot.ini — linked as ~/.config/foot, Linux only
+    ghostty/      config — linked as ~/.config/ghostty, macOS only
     tmux/         tmux.conf — linked as ~/.config/tmux
     CLAUDE.md     conventions for working in here
 
