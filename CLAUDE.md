@@ -9,6 +9,8 @@ Check whether the choice was already settled, and by which commit:
 
     git log --grep='^Decision:' --format='%h %s%n  %b'
 
+Decisions that need more room than a commit body also have a record in `docs/adr/`.
+
 If a change contradicts one, say so and argue the reversal in the commit body.
 Do not quietly undo it.
 
