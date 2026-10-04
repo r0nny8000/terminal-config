@@ -17,8 +17,11 @@ set -eu
 
 venv="${XDG_DATA_HOME:-$HOME/.local/share}/terminal-config-venv"
 
-if [ ! -x "$venv/bin/pyinfra" ]; then
-    python3 -m venv "$venv" 2>/dev/null || {
+# The venv's python links to the interpreter it was built from. When pyenv
+# uninstalls that version, pyinfra is still there but can no longer start, so
+# test that it imports rather than that the file exists, and rebuild otherwise.
+if ! "$venv/bin/python" -c 'import pyinfra' 2>/dev/null; then
+    python3 -m venv --clear "$venv" 2>/dev/null || {
         echo "bootstrap: python3 -m venv failed; on Debian: sudo apt install python3-venv" >&2
         exit 1
     }
