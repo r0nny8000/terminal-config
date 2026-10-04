@@ -1,5 +1,5 @@
 ---
-status: planned
+status: implemented, awaiting the Mac run
 priority: low
 depends-on: cage-foot.md (generalised config-link code in deploy.py)
 acceptance:
@@ -71,23 +71,24 @@ a second package manager to replace 20 working lines.
 
 ## Risks
 
-| Risk                                                                     | Mitigation                                                          |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| Old Application Support link overrides or dangles after the repo is gone | deploy removes it, but only when it points into ghostty-config      |
-| A real file sits there instead (not a link)                              | left alone and reported; the user decides                           |
-| The font cask may not include the Mono variant the config names          | check the installed files before the config commit                  |
-| A cask install may need the macOS password or a Gatekeeper prompt        | run once interactively; later runs see it installed                 |
-| Theme names follow iTerm2-Color-Schemes and could be renamed             | Ghostty prints an error for an unknown theme; fix the one line      |
-| Archiving or deleting the old repo is public or hard to undo             | only after the Mac check passes, and only on the user's explicit go |
+| Risk                                                                     | Mitigation                                                                                                         |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Old Application Support link overrides or dangles after the repo is gone | deploy removes it, but only when it points into ghostty-config                                                     |
+| A real file sits there instead (not a link)                              | left alone and reported; the user decides                                                                          |
+| The font cask may not include the Mono variant the config names          | check the installed files before the config commit                                                                 |
+| A cask install may need the macOS password or a Gatekeeper prompt        | run once interactively; later runs see it installed                                                                |
+| Ghostty installed by hand (not via brew)                                 | `brew install --cask` refuses an existing app, every run; adopt it once with `brew install --cask --adopt ghostty` |
+| Theme names follow iTerm2-Color-Schemes and could be renamed             | Ghostty prints an error for an unknown theme; fix the one line                                                     |
+| Archiving or deleting the old repo is public or hard to undo             | only after the Mac check passes, and only on the user's explicit go                                                |
 
 ## Checklist
 
 - [x] Decide reference script and history handling.
-- [ ] cage-foot.md done, so the generalised link code exists.
-- [ ] `CASKS` list and `brew.casks` call, font included.
-- [ ] Copy `config`, then update its path comment.
-- [ ] `~/.config/ghostty` link and old-symlink removal.
-- [ ] README.
+- [x] cage-foot.md done, so the generalised link code exists.
+- [x] `CASKS` list and `brew.casks` call, font included (67ef728; the cask has the Mono variant).
+- [x] Copy `config`, then update its path comment (a026bee, bdeaf1c).
+- [x] `~/.config/ghostty` link and old-symlink removal (529d188; removal logic tested on Linux).
+- [x] README (433ba8b).
 - [ ] Mac run and visual check by the user.
 - [ ] On the user's go: archive r0nny8000/ghostty-config, remove local clones.
 - [ ] All acceptance criteria in the header pass.
