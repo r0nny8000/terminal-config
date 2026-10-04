@@ -46,6 +46,12 @@ TOOLS = {
     "foot themes": (None,           "foot-themes"),        # foot.ini includes tokyonight-night
 }
 
+# macOS apps and fonts, which Homebrew ships as casks rather than formulae.
+CASKS = [
+    "ghostty",                 # the Mac's terminal; foot is Linux only
+    "font-0xproto-nerd-font",  # ghostty/config uses 0xProto Nerd Font Mono
+]
+
 # No package manager has these: reported, never installed.
 MANUAL = {
     "claude":  "https://claude.com/claude-code",
@@ -185,6 +191,12 @@ if darwin:
         packages=sorted({formula for formula, _ in TOOLS.values() if formula}),
         _env=brew_env,
         _ignore_errors=True,  # one unavailable formula must not stop the rest
+    )
+    brew.casks(
+        name="Install the apps and fonts from Homebrew",
+        casks=CASKS,
+        _env=brew_env,
+        _ignore_errors=True,
     )
 else:
     # Work out what is missing from a fact gathered without sudo, and declare the
