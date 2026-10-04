@@ -21,8 +21,6 @@ set fish_pager_color_completion c0caf5
 set fish_pager_color_description 565f89
 set fish_pager_color_selected_background --background=283457
 
-set fish_key_bindings fish_default_key_bindings
-
 set --erase fish_greeting
 
 source $__fish_config_dir/config.local.fish
