@@ -17,8 +17,8 @@ match this repo — macOS via Homebrew, Debian via apt.
    `~/.config/ghostty` on macOS. On macOS it also removes the old link that the
    retired ghostty-config repo left in Ghostty's Application Support folder.
 4. Installs the tools the fish functions call, from the `TOOLS` table in
-   `deploy.py`. On Debian, bandwhich comes from its release archive and
-   `vcgencmd` only on a Raspberry Pi. On macOS, Ghostty and its font come
+   `deploy.py`. On Debian, bandwhich and the 0xProto Nerd Font come from their
+   release archives and `vcgencmd` only on a Raspberry Pi. On macOS, Ghostty and its font come
    from the `CASKS` list.
 5. Reports the tools no package manager has: claude, pyenv.
 6. Lists fish in `/etc/shells` and makes it the login shell.
