@@ -41,6 +41,9 @@ TOOLS = {
     "sha256sum":   ("coreutils",    None),                 # gsha256sum; Debian has it
     "zoxide":      ("zoxide",       "zoxide"),             # trixie 0.9.7; 0.10.0 is in sid
     "bandwhich":   ("bandwhich",    None),                 # Debian: release archive, below
+    "cage":        (None,           "cage"),               # Wayland only, like foot
+    "foot":        (None,           "foot"),
+    "foot themes": (None,           "foot-themes"),        # foot.ini includes tokyonight-night
 }
 
 # No package manager has these: reported, never installed.
