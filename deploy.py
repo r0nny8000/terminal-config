@@ -144,6 +144,19 @@ if fish_dir_replaced or (
         dest=local_config,
     )
 
+# The reverse direction for the machine's own files: links in the checkout make
+# every fish config visible in one place, while the real files stay in
+# ~/.config/fish, so a re-clone or `git clean -x` cannot take secrets with it.
+# Both are gitignored. fish_variables may not exist until fish first starts; the
+# link dangles until then, and fish writes through it rather than replacing it.
+if host.name == "@local":
+    for entry in ("config.local.fish", "fish_variables"):
+        files.link(
+            name=f"Link {entry} from the repo into ~/.config/fish",
+            path=str(DEPLOY_DIR / "fish" / entry),
+            target=f"{fish_dir}/{entry}",
+        )
+
 # --- tools -------------------------------------------------------------------
 
 if darwin:

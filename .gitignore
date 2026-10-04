@@ -2,3 +2,5 @@ __pycache__/
 .DS_Store
 .claude/
 pyinfra-debug.log
+fish/config.local.fish
+fish/fish_variables

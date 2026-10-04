@@ -10,7 +10,9 @@ match this repo — macOS via Homebrew, Debian via apt.
    `functions` inside it into this repo, so editing a function here is live.
    Anything already at those paths is moved aside to `<name>.<timestamp>`.
 2. Creates an empty `config.local.fish` if nothing is there — untracked, for
-   secrets and machine-specific values.
+   secrets and machine-specific values. Under `@local`, `fish/config.local.fish`
+   and `fish/fish_variables` in this checkout link back to the real files in
+   `~/.config/fish`, so every fish config is visible here; both are gitignored.
 3. Installs the tools the fish functions call, from the `TOOLS` table in
    `deploy.py`. On Debian, bandwhich comes from its release archive and
    `vcgencmd` only on a Raspberry Pi.
@@ -52,7 +54,8 @@ and that `readlink ~/.config/fish/functions` resolves into this repo.
 
     bootstrap.sh  gets pyinfra, then runs deploy.py — the entry point
     deploy.py     the whole installer; the TOOLS table is the part you edit
-    fish/         config.fish, conf.d/, functions/ — linked into ~/.config/fish
+    fish/         config.fish, conf.d/, functions/ — linked into ~/.config/fish;
+                  config.local.fish, fish_variables — untracked links back out
     CLAUDE.md     conventions for working in here
 
 Why anything is the way it is: `git log --grep='^Decision:'`.
