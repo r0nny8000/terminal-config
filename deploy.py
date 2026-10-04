@@ -167,8 +167,8 @@ if host.name == "@local":
         )
 
 # Whole directories this repo owns under ~/.config, linked the same way as the
-# fish entries. foot is Wayland only, so macOS gets no foot config.
-config_dirs = ["tmux"] if darwin else ["foot", "tmux"]
+# fish entries. foot is Wayland only and Ghostty is the Mac's terminal.
+config_dirs = ["ghostty", "tmux"] if darwin else ["foot", "tmux"]
 
 for name in config_dirs:
     if host.name == "@local":
@@ -182,6 +182,18 @@ for name in config_dirs:
         target=target,
         force=True,  # anything real there is moved to <path>.<timestamp>
     )
+
+# The retired ghostty-config repo linked Ghostty's macOS config path into
+# itself. Ghostty reads that file after ~/.config/ghostty and lets it win, and
+# once the old checkout is deleted the link dangles. A real file there is the
+# user's own, so it is only reported.
+if darwin:
+    old_ghostty = f"{home}/Library/Application Support/com.mitchellh.ghostty/config"
+    old_link = host.get_fact(Link, path=old_ghostty)
+    if old_link and "ghostty-config" in old_link["link_target"]:
+        files.link(name="Remove the old ghostty-config link", path=old_ghostty, present=False)
+    elif old_link is False:
+        logger.warning(f"{old_ghostty} overrides ~/.config/ghostty/config")
 
 # --- tools -------------------------------------------------------------------
 
