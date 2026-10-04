@@ -13,11 +13,12 @@ match this repo — macOS via Homebrew, Debian via apt.
    secrets and machine-specific values. Under `@local`, `fish/config.local.fish`
    and `fish/fish_variables` in this checkout link back to the real files in
    `~/.config/fish`, so every fish config is visible here; both are gitignored.
-3. Installs the tools the fish functions call, from the `TOOLS` table in
+3. Links `~/.config/tmux` into this repo, and on Linux `~/.config/foot` too.
+4. Installs the tools the fish functions call, from the `TOOLS` table in
    `deploy.py`. On Debian, bandwhich comes from its release archive and
    `vcgencmd` only on a Raspberry Pi.
-4. Reports the tools no package manager has: claude, pyenv.
-5. Lists fish in `/etc/shells` and makes it the login shell.
+5. Reports the tools no package manager has: claude, pyenv.
+6. Lists fish in `/etc/shells` and makes it the login shell.
 
 Re-running completes whatever is missing and touches nothing already in place.
 
@@ -50,12 +51,17 @@ instead.
 Then open a new terminal and check `l`, `ll`, `c README.md`, `g`, `z`, Ctrl-R,
 and that `readlink ~/.config/fish/functions` resolves into this repo.
 
+On the Pi's own screen, log in and type `term`: foot opens full-screen with
+24-bit colour, and `colors` shows a smooth gradient, also inside tmux.
+
 ## Layout
 
     bootstrap.sh  gets pyinfra, then runs deploy.py — the entry point
     deploy.py     the whole installer; the TOOLS table is the part you edit
     fish/         config.fish, conf.d/, functions/ — linked into ~/.config/fish;
                   config.local.fish, fish_variables — untracked links back out
+    foot/         foot.ini — linked as ~/.config/foot, Linux only
+    tmux/         tmux.conf — linked as ~/.config/tmux
     CLAUDE.md     conventions for working in here
 
 Why anything is the way it is: `git log --grep='^Decision:'`.
