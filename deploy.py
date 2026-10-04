@@ -162,7 +162,7 @@ if host.name == "@local":
 
 # Whole directories this repo owns under ~/.config, linked the same way as the
 # fish entries. foot is Wayland only, so macOS gets no foot config.
-config_dirs = [] if darwin else ["foot"]
+config_dirs = ["tmux"] if darwin else ["foot", "tmux"]
 
 for name in config_dirs:
     if host.name == "@local":
