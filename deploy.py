@@ -65,6 +65,14 @@ BANDWHICH_URL = (
     f"v{BANDWHICH}/bandwhich-v{BANDWHICH}-{{arch}}-unknown-linux-gnu.tar.gz"
 )
 
+# Debian packages no Nerd Font, so foot's font comes from the release archive
+# that Homebrew's font-0xproto-nerd-font cask also downloads on macOS.
+NERD_FONTS = "3.5.1"
+PROTO_FONT_URL = (
+    "https://github.com/ryanoasis/nerd-fonts/releases/download/"
+    f"v{NERD_FONTS}/0xProto.tar.xz"
+)
+
 # What this repo owns inside ~/.config/fish. Everything else there — fish's own
 # fish_variables and completion cache — belongs to the machine, not the repo.
 ENTRIES = ("config.fish", "conf.d", "functions")
@@ -77,6 +85,7 @@ home = host.get_fact(Home)
 sudo = user != "root"  # root needs none, and a bare container has none installed
 config_home = host.get_fact(Command, command='echo "${XDG_CONFIG_HOME:-$HOME/.config}"')
 fish_dir = f"{config_home}/fish"
+data_home = host.get_fact(Command, command='echo "${XDG_DATA_HOME:-$HOME/.local/share}"')
 
 if darwin:
     # command -v on the absolute paths too: brew is a symlink so a File fact
@@ -252,6 +261,19 @@ else:
             ],
             _sudo=sudo,
             _ignore_errors=True,  # a download failure is not a reason to stop
+        )
+
+    # Per user, so no sudo: fontconfig searches $XDG_DATA_HOME/fonts.
+    font_dir = f"{data_home}/fonts/0xProto"
+    if not host.get_fact(File, path=f"{font_dir}/0xProtoNerdFontMono-Regular.ttf"):
+        server.shell(
+            name=f"Install 0xProto Nerd Font {NERD_FONTS} from its release archive",
+            commands=[
+                f"mkdir -p '{font_dir}'",
+                f"curl -fsSL {PROTO_FONT_URL} | tar -xJ --no-same-owner -C '{font_dir}'",
+                f"fc-cache '{font_dir}'",
+            ],
+            _ignore_errors=True,  # without it foot falls back to its default font
         )
 
 for tool, url in MANUAL.items():
