@@ -1,5 +1,6 @@
 # TokyoNight Night color theme
-# Source: https://github.com/vitallium/tokyonight-fish
+# Source: https://github.com/folke/tokyonight.nvim, extras/fish/tokyonight_night.fish
+# Values identical to release v4.14.1; the palette names are resolved to hex here.
 set fish_color_normal c0caf5
 set fish_color_command 7dcfff
 set fish_color_keyword bb9af7
