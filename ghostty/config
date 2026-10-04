@@ -1,4 +1,4 @@
-#   ~/Library/Application Support/com.mitchellh.ghostty/config
+#   ~/.config/ghostty/config, linked into terminal-config by deploy.py
 
 shell-integration-features = no-cursor
 
