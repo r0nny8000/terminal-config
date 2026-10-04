@@ -64,6 +64,25 @@ and that `readlink ~/.config/fish/functions` resolves into this repo.
 On the Pi's own screen, log in and type `term`: foot opens full-screen with
 24-bit colour, and `colors` shows a smooth gradient, also inside tmux.
 
+## Theme
+
+TokyoNight Night everywhere. Its home for terminals and tools is
+[folke/tokyonight.nvim](https://github.com/folke/tokyonight.nvim), a port of
+the VS Code theme whose `extras/` folder generates it for each tool.
+
+| Tool    | Colours come from                                     | Kept in this repo                       |
+| ------- | ----------------------------------------------------- | --------------------------------------- |
+| foot    | Debian's `foot-themes` package                        | one `include=` line in `foot/foot.ini`  |
+| Ghostty | its built-in theme, from iTerm2-Color-Schemes         | `theme = TokyoNight Night`              |
+| fish    | folke's `extras/fish`, values as of v4.14.1           | 20 hex lines in `fish/config.fish`      |
+
+Everything that uses the terminal's 16 basic colours, such as tmux, fzf, lsd,
+git, tig and glow, follows foot's or Ghostty's palette, so none of them needs a
+theme of its own. Only tools drawing their own 24-bit colours do: fish here,
+Neovim in its own repo through the tokyonight.nvim plugin. btop is left on
+its default because it rewrites `btop.conf` on exit, which would dirty a
+linked file.
+
 ## Layout
 
     bootstrap.sh  gets pyinfra, then runs deploy.py — the entry point
