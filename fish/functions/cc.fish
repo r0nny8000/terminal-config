@@ -1,4 +1,6 @@
 function cc --description 'Claude CLI, keeps the machine awake during sessions'
+    # argparse strips the flags from $argv; the tmux re-run below needs them.
+    set -l original_args $argv
     argparse a/auto 'r/resume=?' C/no-caffeinate h/help -- $argv
     or return
 
@@ -21,6 +23,7 @@ function cc --description 'Claude CLI, keeps the machine awake during sessions'
         echo ""
         echo "Short alias for the claude CLI."
         echo "Wraps claude to prevent sleep during sessions, using: $shown"
+        echo "Runs inside tmux session cc-<parent>/<dir> when started outside tmux."
         echo ""
         echo "Options:"
         echo "  -a, --auto            Enable auto permission mode (passes --permission-mode auto)"
@@ -28,6 +31,18 @@ function cc --description 'Claude CLI, keeps the machine awake during sessions'
         echo "  -C, --no-caffeinate   Don't prevent system sleep (skips the wrapper)"
         echo "  -h, --help            Show this help message and exit"
         return 0
+    end
+
+    # Over SSH, a dropped connection hangs up the shell and kills claude with it.
+    # A tmux server outlives the connection; running cc again in the same
+    # directory reattaches instead of starting a second claude.
+    if not set -q TMUX; and command -q tmux
+        set -l parts (string split -n / $PWD)
+        set -l dir (string join / $parts[-2..-1])
+        test -n "$dir"; or set dir root
+        set -l session cc-(string replace -ar '[.:]' - $dir)
+        tmux new-session -A -s $session -c $PWD fish -c 'cc $argv' -- $original_args
+        return
     end
 
     set -l claude_args $argv
