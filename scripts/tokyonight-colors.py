@@ -4,13 +4,13 @@ Values and roles come from folke/tokyonight.nvim v4.14.1:
 colors/storm.lua + colors/night.lua (hex values), colors/init.lua (derived
 roles such as border or search) and groups/base.lua (highlight groups).
 "ANSI" is the terminal palette slot foot's tokyonight-night theme gives the
-colour; tmux, fzf and the other 16-colour tools only ever see those slots.
+colour.
 """
 
 GROUPS = [
     ("Backgrounds", [
         ("bg_dark1",       "0c0e14", "",          "darkest background; no role in the core theme"),
-        ("black",          "15161e", "black",     "borders (derived: bg blended 80% toward black)  · here: inactive tmux border, current tmux tab"),
+        ("black",          "15161e", "black",     "borders (derived: bg blended 80% toward black)"),
         ("bg_dark",        "16161e", "",          "status line, popups, sidebars, inactive windows"),
         ("bg",             "1a1b26", "background", "main background (Normal)"),
         ("bg_highlight",   "292e42", "",          "current line (CursorLine, CursorColumn)"),
@@ -27,7 +27,7 @@ GROUPS = [
     ("Blues and cyans", [
         ("blue7",          "394b70", "",          "inlay hint background"),
         ("blue0",          "3d59a1", "",          "search match background; visual selection (blended 40%)"),
-        ("blue",           "7aa2f7", "blue",      "directories, titles, selected tab, TODO  · here: tmux bar, active tmux border"),
+        ("blue",           "7aa2f7", "blue",      "directories, titles, selected tab, TODO"),
         ("cyan",           "7dcfff", "cyan",      "keywords, preprocessor"),
         ("blue1",          "2ac3de", "",          "types, special characters, completion matches"),
         ("blue2",          "0db9d7", "",          "info diagnostics"),
