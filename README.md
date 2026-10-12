@@ -92,6 +92,7 @@ linked file.
     foot/         foot.ini — linked as ~/.config/foot, Linux only
     ghostty/      config — linked as ~/.config/ghostty, macOS only
     tmux/         tmux.conf — linked as ~/.config/tmux
+    scripts/      tokyonight-colors.py — prints the palette with each colour's role
     CLAUDE.md     conventions for working in here
 
 Why anything is the way it is: `git log --grep='^Decision:'`.
