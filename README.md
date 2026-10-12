@@ -75,10 +75,12 @@ the VS Code theme whose `extras/` folder generates it for each tool.
 | foot    | Debian's `foot-themes` package                        | one `include=` line in `foot/foot.ini`  |
 | Ghostty | its built-in theme, from iTerm2-Color-Schemes         | `theme = TokyoNight Night`              |
 | fish    | folke's `extras/fish`, values as of v4.14.1           | 20 hex lines in `fish/config.fish`      |
+| tmux    | folke's palette, values as of v4.14.1                 | 3 hex colours in `tmux/tmux.conf`       |
 
-Everything that uses the terminal's 16 basic colours, such as tmux, fzf, lsd,
-git, tig and glow, follows foot's or Ghostty's palette, so none of them needs a
-theme of its own. Only tools drawing their own 24-bit colours do: fish here,
+Everything that uses the terminal's 16 basic colours, such as fzf, lsd, git,
+tig and glow, follows foot's or Ghostty's palette, so none of them needs a
+theme of its own. Only tools drawing their own 24-bit colours do: fish and
+tmux's status bar and pane borders here,
 Neovim in its own repo through the tokyonight.nvim plugin. btop is left on
 its default because it rewrites `btop.conf` on exit, which would dirty a
 linked file.
