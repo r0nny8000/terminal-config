@@ -1,0 +1,17 @@
+onboarding = false
+
+[ui]
+status_indicators = "dots"
+
+[ui.sound]
+enabled = true
+
+[ui.toast]
+delivery = "system"
+
+[theme]
+name = "tokyo-night"
+auto_switch = false
+
+[keys]
+prefix = ["ctrl+space", "ctrl+b"]
