@@ -41,6 +41,7 @@ TOOLS = {
     "sha256sum":   ("coreutils",    None),                 # gsha256sum; Debian has it
     "zoxide":      ("zoxide",       "zoxide"),             # trixie 0.9.7; 0.10.0 is in sid
     "bandwhich":   ("bandwhich",    None),                 # Debian: release archive, below
+    "herdr":       ("herdr",        None),                 # Debian: release binary, below
     "cage":        (None,           "cage"),               # Wayland only, like foot
     "foot":        (None,           "foot"),
     "foot themes": (None,           "foot-themes"),        # foot.ini includes tokyonight-night
@@ -63,6 +64,13 @@ BANDWHICH = "0.23.1"
 BANDWHICH_URL = (
     "https://github.com/imsnif/bandwhich/releases/download/"
     f"v{BANDWHICH}/bandwhich-v{BANDWHICH}-{{arch}}-unknown-linux-gnu.tar.gz"
+)
+
+# Debian has no herdr package; the release ships a static binary per arch.
+HERDR = "0.9.4"
+HERDR_URL = (
+    "https://github.com/herdrdev/herdr/releases/download/"
+    f"v{HERDR}/herdr-linux-{{arch}}"
 )
 
 # Debian packages no Nerd Font, so foot's font comes from the release archive
@@ -258,6 +266,20 @@ else:
             commands=[
                 f"curl -fsSL {BANDWHICH_URL.format(arch=host.get_fact(Arch))}"
                 " | tar -xz --no-same-owner -C /usr/local/bin bandwhich"
+            ],
+            _sudo=sudo,
+            _ignore_errors=True,  # a download failure is not a reason to stop
+        )
+
+    # A transfer cut off midway leaves a partial file that Which would then
+    # report as installed, so remove it and let the next run try again.
+    if not host.get_fact(Which, command="herdr"):
+        server.shell(
+            name=f"Install herdr {HERDR} from its release binary",
+            commands=[
+                f"curl -fsSL -o /usr/local/bin/herdr {HERDR_URL.format(arch=host.get_fact(Arch))}"
+                " || { rm -f /usr/local/bin/herdr; exit 1; }",
+                "chmod 755 /usr/local/bin/herdr",
             ],
             _sudo=sudo,
             _ignore_errors=True,  # a download failure is not a reason to stop
