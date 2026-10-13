@@ -16,6 +16,8 @@ match this repo — macOS via Homebrew, Debian via apt.
 3. Links `~/.config/tmux` into this repo, plus `~/.config/foot` on Linux and
    `~/.config/ghostty` on macOS. On macOS it also removes the old link that the
    retired ghostty-config repo left in Ghostty's Application Support folder.
+   Links `~/.config/herdr/config.toml` too, but only that file: herdr keeps its
+   sockets, logs and sessions in the same directory.
 4. Installs the tools the fish functions call, from the `TOOLS` table in
    `deploy.py`. On Debian, bandwhich, herdr and the 0xProto Nerd Font come from
    their releases and `vcgencmd` only on a Raspberry Pi. On macOS, Ghostty and its font come
@@ -76,6 +78,7 @@ the VS Code theme whose `extras/` folder generates it for each tool.
 | Ghostty | its built-in theme, from iTerm2-Color-Schemes         | `theme = TokyoNight Night`              |
 | fish    | folke's `extras/fish`, values as of v4.14.1           | 20 hex lines in `fish/config.fish`      |
 | tmux    | folke's palette, values as of v4.14.1                 | 3 hex colours in `tmux/tmux.conf`       |
+| herdr   | its built-in theme                                    | `name = "tokyo-night"`                  |
 
 Everything that uses the terminal's 16 basic colours, such as fzf, lsd, git,
 tig and glow, follows foot's or Ghostty's palette, so none of them needs a
@@ -94,6 +97,7 @@ linked file.
     foot/         foot.ini — linked as ~/.config/foot, Linux only
     ghostty/      config — linked as ~/.config/ghostty, macOS only
     tmux/         tmux.conf — linked as ~/.config/tmux
+    herdr/        config.toml — linked as ~/.config/herdr/config.toml
     scripts/      tokyonight-colors.py — prints the palette with each colour's role
     CLAUDE.md     conventions for working in here
 

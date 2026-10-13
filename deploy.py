@@ -200,6 +200,27 @@ for name in config_dirs:
         force=True,  # anything real there is moved to <path>.<timestamp>
     )
 
+# herdr keeps its sockets, logs and sessions next to its config, so only
+# config.toml is the repo's; ~/.config/herdr stays a real directory, like fish's.
+herdr_dir = f"{config_home}/herdr"
+files.directory(name="Keep ~/.config/herdr a real directory", path=herdr_dir)
+
+if host.name == "@local":
+    herdr_target = str(DEPLOY_DIR / "herdr" / "config.toml")
+else:
+    herdr_target = f"{link_base}/herdr/config.toml"
+    files.put(
+        name="Copy herdr config.toml",
+        src=str(DEPLOY_DIR / "herdr" / "config.toml"),
+        dest=herdr_target,
+    )
+files.link(
+    name="Link herdr config.toml into the repo",
+    path=f"{herdr_dir}/config.toml",
+    target=herdr_target,
+    force=True,  # anything real there is moved to <path>.<timestamp>
+)
+
 # The retired ghostty-config repo linked Ghostty's macOS config path into
 # itself. Ghostty reads that file after ~/.config/ghostty and lets it win, and
 # once the old checkout is deleted the link dangles. A real file there is the
