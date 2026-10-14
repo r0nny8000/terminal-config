@@ -33,7 +33,6 @@ TOOLS = {
     "lsd":         ("lsd",          "lsd"),
     "glow":        ("glow",         "glow"),
     "fzf":         ("fzf",          "fzf"),
-    "tmux":        ("tmux",         "tmux"),
     "hostname":    (None,           "hostname"),
     "python":      (None,           "python-is-python3"),  # macOS: pyenv, see MANUAL
     "bat":         ("bat",          "bat"),                # apt installs it as batcat
@@ -185,7 +184,7 @@ if host.name == "@local":
 
 # Whole directories this repo owns under ~/.config, linked the same way as the
 # fish entries. foot is Wayland only and Ghostty is the Mac's terminal.
-config_dirs = ["ghostty", "tmux"] if darwin else ["foot", "tmux"]
+config_dirs = ["ghostty"] if darwin else ["foot"]
 
 for name in config_dirs:
     if host.name == "@local":
