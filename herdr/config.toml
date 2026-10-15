@@ -15,3 +15,9 @@ auto_switch = false
 
 [keys]
 prefix = ["ctrl+space", "ctrl+b"]
+new_tab = "prefix+t"
+new_workspace = "prefix+n"
+previous_tab = "prefix+r"
+next_tab = "prefix+z"
+zoom = "prefix+f"
+resize_mode = "prefix+m"
