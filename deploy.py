@@ -280,39 +280,57 @@ else:
             _sudo=sudo,
         )
 
-    if not host.get_fact(Which, command="bandwhich"):
+    # The release installs compare the installed version with the constant, so
+    # bumping the constant is the whole update. Each binary is written to .new and
+    # renamed over the old one: writing into a running binary fails with "Text
+    # file busy", and a download cut off midway never reaches the real path.
+    bandwhich = "/usr/local/bin/bandwhich"
+    if host.get_fact(Command, command=f"{bandwhich} --version 2>/dev/null || true") != (
+        f"bandwhich {BANDWHICH}"
+    ):
         server.shell(
             name=f"Install bandwhich {BANDWHICH} from its release archive",
             commands=[
                 f"curl -fsSL {BANDWHICH_URL.format(arch=host.get_fact(Arch))}"
-                " | tar -xz --no-same-owner -C /usr/local/bin bandwhich"
+                f" | tar -xzO bandwhich > {bandwhich}.new"
+                f" && chmod 755 {bandwhich}.new && mv {bandwhich}.new {bandwhich}"
+                f" || {{ rm -f {bandwhich}.new; exit 1; }}"
             ],
             _sudo=sudo,
             _ignore_errors=True,  # a download failure is not a reason to stop
         )
 
-    # A transfer cut off midway leaves a partial file that Which would then
-    # report as installed, so remove it and let the next run try again.
-    if not host.get_fact(Which, command="herdr"):
+    herdr = "/usr/local/bin/herdr"
+    if host.get_fact(Command, command=f"{herdr} --version 2>/dev/null || true") != (
+        f"herdr {HERDR}"
+    ):
         server.shell(
             name=f"Install herdr {HERDR} from its release binary",
             commands=[
-                f"curl -fsSL -o /usr/local/bin/herdr {HERDR_URL.format(arch=host.get_fact(Arch))}"
-                " || { rm -f /usr/local/bin/herdr; exit 1; }",
-                "chmod 755 /usr/local/bin/herdr",
+                f"curl -fsSL -o {herdr}.new {HERDR_URL.format(arch=host.get_fact(Arch))}"
+                f" && chmod 755 {herdr}.new && mv {herdr}.new {herdr}"
+                f" || {{ rm -f {herdr}.new; exit 1; }}"
             ],
             _sudo=sudo,
             _ignore_errors=True,  # a download failure is not a reason to stop
         )
 
-    # Per user, so no sudo: fontconfig searches $XDG_DATA_HOME/fonts.
+    # Per user, so no sudo: fontconfig searches $XDG_DATA_HOME/fonts. The font has
+    # no version command, so the install leaves a VERSION file to compare. A new
+    # release is unpacked beside the old one and swapped in whole, so files it
+    # dropped do not linger and a failed download leaves the old font working.
     font_dir = f"{data_home}/fonts/0xProto"
-    if not host.get_fact(File, path=f"{font_dir}/0xProtoNerdFontMono-Regular.ttf"):
+    if host.get_fact(Command, command=f"cat '{font_dir}/VERSION' 2>/dev/null || true") != (
+        NERD_FONTS
+    ):
         server.shell(
             name=f"Install 0xProto Nerd Font {NERD_FONTS} from its release archive",
             commands=[
-                f"mkdir -p '{font_dir}'",
-                f"curl -fsSL {PROTO_FONT_URL} | tar -xJ --no-same-owner -C '{font_dir}'",
+                f"rm -rf '{font_dir}.new' && mkdir -p '{font_dir}.new'",
+                f"curl -fsSL {PROTO_FONT_URL} | tar -xJ --no-same-owner -C '{font_dir}.new'"
+                f" || {{ rm -rf '{font_dir}.new'; exit 1; }}",
+                f"echo {NERD_FONTS} > '{font_dir}.new/VERSION'",
+                f"rm -rf '{font_dir}' && mv '{font_dir}.new' '{font_dir}'",
                 f"fc-cache '{font_dir}'",
             ],
             _ignore_errors=True,  # without it foot falls back to its default font

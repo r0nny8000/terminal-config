@@ -27,6 +27,10 @@ match this repo — macOS via Homebrew, Debian via apt.
 
 Re-running completes whatever is missing and touches nothing already in place.
 
+To update herdr, bandwhich or the 0xProto font on Debian, bump `HERDR`,
+`BANDWHICH` or `NERD_FONTS` in `deploy.py` and run again. A running herdr
+server keeps the old version until `herdr server stop`.
+
 ## Run
 
     ./bootstrap.sh --dry     # preview, changes nothing
