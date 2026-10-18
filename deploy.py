@@ -66,7 +66,7 @@ BANDWHICH_URL = (
 )
 
 # Debian has no herdr package; the release ships a static binary per arch.
-HERDR = "0.9.4"
+HERDR = "0.9.5"
 HERDR_URL = (
     "https://github.com/herdrdev/herdr/releases/download/"
     f"v{HERDR}/herdr-linux-{{arch}}"
