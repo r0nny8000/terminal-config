@@ -23,7 +23,11 @@ match this repo — macOS via Homebrew, Debian via apt.
    their releases and `vcgencmd` only on a Raspberry Pi. On macOS, Ghostty and its font come
    from the `CASKS` list.
 5. Reports the tools no package manager has: claude, pyenv.
-6. Lists fish in `/etc/shells` and makes it the login shell.
+6. Where claude is installed: adds this repo's plugin marketplace in `claude/`,
+   installs its `herdr-tab-label` plugin, and installs herdr's own Claude
+   integration. The plugin keeps the herdr tab label equal to the session's
+   `/rename` name; a rename shows up on the next prompt or resume.
+7. Lists fish in `/etc/shells` and makes it the login shell.
 
 Re-running completes whatever is missing and touches nothing already in place.
 
@@ -63,6 +67,8 @@ it did not install. Hand it over to Homebrew once, then run again:
     ./bootstrap.sh              # apply, then run it again:
     ./bootstrap.sh              # every operation must no-op
     fish_indent --check fish/**/*.fish
+    claude plugin validate claude
+    uv run --with pytest pytest -q
 
 Then open a new terminal and check `l`, `ll`, `c README.md`, `g`, `z`, Ctrl-R,
 and that `readlink ~/.config/fish/functions` resolves into this repo.
@@ -99,6 +105,8 @@ linked file.
     foot/         foot.ini — linked as ~/.config/foot, Linux only
     ghostty/      config — linked as ~/.config/ghostty, macOS only
     herdr/        config.toml — linked as ~/.config/herdr/config.toml
+    claude/       Claude Code marketplace; herdr-tab-label/ is its one plugin
+    tests/        pytest tests for the plugin's hook
     scripts/      tokyonight-colors.py — prints the palette with each colour's role
     CLAUDE.md     conventions for working in here
 
