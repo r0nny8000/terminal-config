@@ -1,0 +1,14 @@
+{
+  "name": "terminal-config",
+  "description": "Claude Code plugins that belong to this terminal setup",
+  "owner": {
+    "name": "r0nny8000"
+  },
+  "plugins": [
+    {
+      "name": "herdr-tab-label",
+      "source": "./herdr-tab-label",
+      "description": "Keeps the herdr tab label equal to the session's /rename name"
+    }
+  ]
+}

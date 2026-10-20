@@ -1,0 +1,9 @@
+{
+  "name": "herdr-tab-label",
+  "description": "Keeps the herdr tab label equal to the session's /rename name",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "r0nny8000"
+  }
+}
