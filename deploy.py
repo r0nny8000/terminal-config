@@ -7,6 +7,7 @@ the login shell. Safe to re-run: it completes whatever is missing.
     pyinfra username@pi.local deploy.py   # a machine over SSH
 """
 
+import json
 import re
 from io import StringIO
 from pathlib import Path
@@ -340,6 +341,57 @@ else:
 for tool, url in MANUAL.items():
     if not host.get_fact(Which, command=tool):
         logger.warning(f"{tool} is not installed and needs a manual install: {url}")
+
+# --- Claude Code ---------------------------------------------------------------
+
+# The herdr-tab-label plugin comes from this repo's own marketplace in claude/,
+# and herdr's Claude integration is installed alongside it. Both installers edit
+# ~/.claude/settings.json themselves; deploy.py never touches that file, because
+# Claude rewrites it. Each step is gated on its listing so a second run declares
+# nothing. ADR 0003 has the reasoning.
+claude_bin = host.get_fact(Which, command="claude")
+if claude_bin:
+    if host.name == "@local":
+        marketplace_dir = str(DEPLOY_DIR / "claude")
+    else:
+        marketplace_dir = f"{link_base}/claude"
+        files.sync(
+            name="Copy the Claude Code marketplace",
+            src=str(DEPLOY_DIR / "claude"),
+            dest=marketplace_dir,
+            delete=True,
+        )
+
+    marketplaces = json.loads(
+        host.get_fact(Command, command=f"{claude_bin} plugin marketplace list --json")
+    )
+    if "terminal-config" not in (m["name"] for m in marketplaces):
+        server.shell(
+            name="Add this repo's Claude Code marketplace",
+            commands=[f"{claude_bin} plugin marketplace add '{marketplace_dir}'"],
+        )
+
+    plugins = json.loads(host.get_fact(Command, command=f"{claude_bin} plugin list --json"))
+    if not any(p["id"] == "herdr-tab-label@terminal-config" and p["enabled"] for p in plugins):
+        server.shell(
+            name="Install the herdr-tab-label Claude Code plugin",
+            commands=[f"{claude_bin} plugin install herdr-tab-label@terminal-config"],
+        )
+
+    # herdr may be installed by this very run, so its absence is not a reason
+    # to skip; on a machine where it never arrives the install fails visibly.
+    # status says "claude: current (v11)" when up to date, and "not installed"
+    # or "outdated" otherwise; install also updates an outdated one.
+    herdr_bin = f"{brew_dir}/herdr" if darwin else "/usr/local/bin/herdr"
+    integrations = host.get_fact(
+        Command, command=f"{herdr_bin} integration status 2>/dev/null || true"
+    )
+    if not any(line.startswith("claude: current") for line in integrations.splitlines()):
+        server.shell(
+            name="Install herdr's Claude Code integration",
+            commands=[f"{herdr_bin} integration install claude"],
+            _ignore_errors=True,  # without it only herdr's agent status is missing
+        )
 
 # --- login shell -------------------------------------------------------------
 
