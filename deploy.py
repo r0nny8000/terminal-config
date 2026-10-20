@@ -44,6 +44,7 @@ TOOLS = {
     "cage":        (None,           "cage"),               # Wayland only, like foot
     "foot":        (None,           "foot"),
     "foot themes": (None,           "foot-themes"),        # foot.ini includes tokyonight-night
+    "wl-copy":     (None,           "wl-clipboard"),       # herdr copies through it under Wayland
 }
 
 # macOS apps and fonts, which Homebrew ships as casks rather than formulae.
