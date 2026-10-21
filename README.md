@@ -26,7 +26,9 @@ match this repo — macOS via Homebrew, Debian via apt.
 6. Where claude is installed: adds this repo's plugin marketplace in `claude/`,
    installs its `herdr-tab-label` plugin, and installs herdr's own Claude
    integration. The plugin keeps the herdr tab label equal to the session's
-   `/rename` name; a rename shows up on the next prompt or resume.
+   `/rename` name; a rename shows up on the next prompt or resume. Outside
+   Claude, `fish/conf.d/herdr-tab.fish` sets the label to the current folder
+   name on every prompt.
 7. Lists fish in `/etc/shells` and makes it the login shell.
 
 Re-running completes whatever is missing and touches nothing already in place.
