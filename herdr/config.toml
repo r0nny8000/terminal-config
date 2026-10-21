@@ -22,3 +22,11 @@ next_tab = "prefix+z"
 zoom = "prefix+f"
 resize_mode = "prefix+m"
 copy_mode = "prefix+c"
+
+# Paste like nvim's p. The server outlives the session that started it and
+# may have no WAYLAND_DISPLAY, so point wl-paste at foot's socket. The
+# bracketed-paste markers stop fish from running a multi-line clipboard.
+[[keys.command]]
+key = "prefix+p"
+type = "shell"
+command = '''herdr pane send-text "$HERDR_ACTIVE_PANE_ID" "$(printf '\033[200~')$(WAYLAND_DISPLAY=wayland-0 wl-paste --no-newline)$(printf '\033[201~')"'''
