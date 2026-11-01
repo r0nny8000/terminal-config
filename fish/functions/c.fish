@@ -15,7 +15,8 @@ function c --description 'Show files in the terminal: markdown through glow, eve
         if not test -e $file
             echo "c: $file: No such file or directory" >&2
         else if string match -qri '\.(md|markdown)$' -- $file; and command -q glow
-            glow $file
+            # glow's generated glow.yml pins width to 80; follow the window instead.
+            glow -w $COLUMNS $file
         else
             command $pager $file
         end
