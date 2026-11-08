@@ -175,8 +175,8 @@ function signal --description 'Signal of every visible Wi-Fi access point'
     end
 
     # The first 5 bytes of the BSSID are what tells the devices apart here.
+    # No IP here: most access points have none in ip neigh; the table keeps it.
     set -l l_ssid (string pad -r -- $ssids[$order])
-    set -l l_ip (string pad -r -- $ips[$order])
     set -l l_short (string pad -r -- (string sub -l 14 -- $bssids[$order]))
     set -l l_band (string pad -r -- $bands[$order])
     set -l l_mark (string pad -r -- $marks[$order])
@@ -185,7 +185,7 @@ function signal --description 'Signal of every visible Wi-Fi access point'
     set -l k 1
     for value in $signals[$order]
         set -l bar (string repeat -n (math "round($value / 5)") █)
-        echo "  $l_ssid[$k]  $l_ip[$k]  $l_short[$k]  $l_band[$k]  $l_mark[$k]    $l_sig[$k] %  $bar"
+        echo "  $l_ssid[$k]  $l_short[$k]  $l_band[$k]  $l_mark[$k]    $l_sig[$k] %  $bar"
         set k (math $k + 1)
     end
 end

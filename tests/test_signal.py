@@ -66,14 +66,14 @@ fe80::1 lladdr 00:ab:cd:77:88:d0 router STALE"""
 
 DIAGRAM = """Signal of all visible networks:
 
-  office        10.9.8.37  0A:11:22:33:44  5 GHz    connected    95 %  ███████████████████
-  office-g      10.9.8.37  0A:11:22:33:44  5 GHz                 94 %  ███████████████████
-  office        10.9.8.37  08:11:22:33:44  2.4 GHz               82 %  ████████████████
-  office        ?          00:AB:CD:55:66  2.4 GHz               81 %  ████████████████
-  office        10.9.8.1   00:AB:CD:77:88  2.4 GHz               67 %  █████████████
-  Nachbar-WLAN  ?          00:00:5E:00:53  2.4 GHz               59 %  ████████████
-  office        10.9.8.1   02:AB:CD:77:88  5 GHz                 50 %  ██████████
-  (hidden)      ?          00:00:5E:00:53  5 GHz                 35 %  ███████
+  office        0A:11:22:33:44  5 GHz    connected    95 %  ███████████████████
+  office-g      0A:11:22:33:44  5 GHz                 94 %  ███████████████████
+  office        08:11:22:33:44  2.4 GHz               82 %  ████████████████
+  office        00:AB:CD:55:66  2.4 GHz               81 %  ████████████████
+  office        00:AB:CD:77:88  2.4 GHz               67 %  █████████████
+  Nachbar-WLAN  00:00:5E:00:53  2.4 GHz               59 %  ████████████
+  office        02:AB:CD:77:88  5 GHz                 50 %  ██████████
+  (hidden)      00:00:5E:00:53  5 GHz                 35 %  ███████
 """
 
 TABLE = """Signal of all visible networks:
