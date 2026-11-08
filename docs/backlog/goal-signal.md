@@ -15,8 +15,8 @@ which device, band and channel the Pi is on and what else is around.
 
 ## Context
 
-- Repo state: `main`, clean tree, last commit `docs: show all visible
-  networks in goal signal`; 5 commits ahead of origin, not pushed.
+- Repo state: `main`, clean tree, last commit `docs: add a table view to
+  goal signal`; 6 commits ahead of origin, not pushed.
 - Source item: `docs/backlog/signal-fish.md`. Read it in full; its data
   sources, IP heuristic and risks apply, but its names (`signal_names`), its
   Device column, its connected-SSID-and-band filter and its example output
@@ -35,10 +35,15 @@ which device, band and channel the Pi is on and what else is around.
     neighbours included, sorted by signal. Header line:
     `Signal of all visible networks:`.
   - Hidden networks (empty SSID) are shown with SSID `(hidden)`.
-  - Diagram label: `<SSID>, <IP>, <short BSSID>, <band>`, with
-    `, connected` appended on the connected row. Short BSSID is the first 5
-    bytes of the BSSID (`0A:11:22:33:44`); the user identifies devices by it.
-    It differs per band on these devices (first byte `26`/`24`, `02`/`00`).
+  - Two views of the same rows in the same order: plain `signal` prints
+    only the diagram; `signal -t` / `--table` prints only the table, which
+    adds detail. Both start with the header line.
+  - Diagram label: aligned columns SSID, IP, short BSSID, band, and
+    `connected` on the connected row (empty elsewhere), each padded to its
+    widest cell and separated by two spaces, no commas. Short BSSID is the
+    first 5 bytes of the BSSID (`0A:11:22:33:44`); the user identifies
+    devices by it. It differs per band on these devices (first byte
+    `26`/`24`, `02`/`00`).
   - Band is `5 GHz` or `2.4 GHz`, derived from FREQ.
   - Table columns: SSID, IP, BSSID, Band, Ch, Signal, dBm, Rx Mbit/s,
     Tx Mbit/s. The table shows the full BSSID, because short BSSIDs can
@@ -59,26 +64,32 @@ which device, band and channel the Pi is on and what else is around.
   - Style check: `fish_indent --check (git ls-files "fish/*.fish")` instead
     of the backlog's `fish/**/*.fish`, which also matches the user's ignored
     `fish/config.local.fish` and fails on it today.
-- Target output for the fixture, exactly (the 4-space Markdown indent below
-  is not part of it): header line, blank line, diagram rows indented 2
-  spaces, blank line, table at column 0. Measured: the diagram's label column
-  is longest label + 4 (here 51 + 4 = 55, the same rule as the backlog
-  example), signal right-aligned in 2 characters; every table row is 105
-  characters, columns as wide as their widest cell except dBm, which is 6 as
-  in the backlog; SSID, IP, BSSID and Band left-aligned, Ch, Signal, dBm, Rx
-  and Tx right-aligned; bars are one block per 5 % rounded:
+- Target output for the fixture, exactly (the 6-space Markdown indent below
+  is not part of it). Both views: header line, blank line, then the rows.
+
+  `signal`: diagram rows indented 2 spaces. Label columns padded to their
+  widest cell (SSID 12, IP 9, short BSSID 14, band 7, `connected` 9) and
+  joined by two spaces, then 4 spaces, the signal right-aligned in 2
+  characters, ` %`, two spaces, and one block per 5 % rounded:
   19, 19, 16, 16, 13, 12, 10, 7.
 
       Signal of all visible networks:
 
-        office, 10.9.8.37, 0A:11:22:33:44, 5 GHz, connected    95 %  ███████████████████
-        office-g, 10.9.8.37, 0A:11:22:33:44, 5 GHz             94 %  ███████████████████
-        office, 10.9.8.37, 08:11:22:33:44, 2.4 GHz             82 %  ████████████████
-        office, ?, 00:AB:CD:55:66, 2.4 GHz                     81 %  ████████████████
-        office, 10.9.8.1, 00:AB:CD:77:88, 2.4 GHz              67 %  █████████████
-        Nachbar-WLAN, ?, 00:00:5E:00:53, 2.4 GHz               59 %  ████████████
-        office, 10.9.8.1, 02:AB:CD:77:88, 5 GHz                50 %  ██████████
-        (hidden), ?, 00:00:5E:00:53, 5 GHz                     35 %  ███████
+        office        10.9.8.37  0A:11:22:33:44  5 GHz    connected    95 %  ███████████████████
+        office-g      10.9.8.37  0A:11:22:33:44  5 GHz                 94 %  ███████████████████
+        office        10.9.8.37  08:11:22:33:44  2.4 GHz               82 %  ████████████████
+        office        ?          00:AB:CD:55:66  2.4 GHz               81 %  ████████████████
+        office        10.9.8.1   00:AB:CD:77:88  2.4 GHz               67 %  █████████████
+        Nachbar-WLAN  ?          00:00:5E:00:53  2.4 GHz               59 %  ████████████
+        office        10.9.8.1   02:AB:CD:77:88  5 GHz                 50 %  ██████████
+        (hidden)      ?          00:00:5E:00:53  5 GHz                 35 %  ███████
+
+  `signal -t`: table at column 0. Every table row is 105 characters,
+  columns as wide as their widest cell except dBm, which is 6 as in the
+  backlog; SSID, IP, BSSID and Band left-aligned, Ch, Signal, dBm, Rx and Tx
+  right-aligned.
+
+      Signal of all visible networks:
 
       | SSID         | IP        | BSSID             | Band    | Ch | Signal |    dBm | Rx Mbit/s | Tx Mbit/s |
       | ------------ | --------- | ----------------- | ------- | -- | ------ | ------ | --------- | --------- |
@@ -134,12 +145,13 @@ which device, band and channel the Pi is on and what else is around.
 ## Acceptance checklist
 
 - [ ] Tests come first: `tests/test_signal.py` exists and fails before the function exists — proven by `uv run --with pytest pytest -q tests/test_signal.py` run once before writing signal.fish, output shown
-- [ ] With fake nmcli, iw and ip fed the fixture, `signal` prints the target output in this file's Context exactly (header, diagram strongest first labelled `<SSID>, <IP>, <short BSSID>, <band>` with `, connected` on the connected row and one block per 5 % rounded, then the table with the full BSSID, sorted by signal) — proven by `uv run --with pytest pytest -q tests/test_signal.py` passing
+- [ ] With fake nmcli, iw and ip fed the fixture, `signal` prints the diagram target output in this file's Context exactly (header, rows strongest first, aligned label columns SSID, IP, short BSSID, band, `connected`, one block per 5 % rounded) and no table — proven by `uv run --with pytest pytest -q tests/test_signal.py` passing
+- [ ] `signal -t` and `signal --table` print the table target output exactly (header, then the table with the full BSSID, same rows and order) and no diagram — proven by the same pytest run
 - [ ] Every BSSID nmcli lists appears, including other SSIDs and hidden networks as `(hidden)` — proven by the same pytest run
 - [ ] IP comes from a unique IPv4 `ip neigh` match on BSSID bytes 2-5; with no unique match (none, or two entries sharing bytes 2-5) it shows `?`; a BSSID missing from the iw scan dump shows dBm `?` — proven by the same pytest run, including a case with two matching entries
 - [ ] Without nmcli on PATH, `signal` prints `signal: Linux only (needs nmcli)` to stderr and returns 1 — proven by the same pytest run
-- [ ] `signal -h` follows the wifi/speedtest layout (`Usage:`, description, `Runs:`, `Options:` ending with `  -h, --help  Show this help message and exit`) — proven by pytest and by `fish -c 'signal -h'` output shown
-- [ ] Live run on the Pi works — proven by `fish -c signal` output shown, listing the visible networks with SSID, IP, short BSSID and band labels and plausible values
+- [ ] `signal -h` follows the wifi/speedtest layout (`Usage:`, description, `Runs:`, `Options:` listing `-t, --table` and ending with `  -h, --help  Show this help message and exit`) — proven by pytest and by `fish -c 'signal -h'` output shown
+- [ ] Live runs on the Pi work — proven by `fish -c signal` and `fish -c 'signal -t'` output shown, listing the visible networks with plausible values
 - [ ] README has a section listing `wifi`, `cpu`, `speedtest` and `signal` — proven by `grep -n -E 'wifi|cpu|speedtest|signal' README.md` output shown
 - [ ] Style — proven by `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'` printing 0
 - [ ] Whole suite passes — proven by `uv run --with pytest pytest -q` (18 or more passed, 0 failed)
@@ -151,7 +163,7 @@ which device, band and channel the Pi is on and what else is around.
 Run, in order, and show each output in the transcript:
 `uv run --with pytest pytest -q`,
 `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'`,
-`fish -c 'signal -h'`, `fish -c signal`,
+`fish -c 'signal -h'`, `fish -c signal`, `fish -c 'signal -t'`,
 `grep -n -E 'wifi|cpu|speedtest|signal' README.md`, `./bootstrap.sh --dry`,
 `./bootstrap.sh -y`, `git status --short`, `git log --oneline -4`.
 
@@ -197,5 +209,5 @@ None
 ## Condition
 
 ```text
-fish/functions/signal.fish exists and `uv run --with pytest pytest -q` passes (0 failed), including a new tests/test_signal.py that was run and failed once before the function was written. The tests put only fake nmcli, iw and ip on PATH, fed with the fixture from the goal file, and prove: output equals the target output in the goal file's Context exactly (header, diagram strongest first labelled `<SSID>, <IP>, <short BSSID>, <band>` with `, connected` on the connected row and one block per 5 % rounded, then the table with columns SSID, IP, full BSSID, Band, Ch, Signal, dBm, Rx, Tx sorted by signal); every BSSID nmcli lists appears, hidden ones as `(hidden)`; IP comes from a unique IPv4 ip neigh match on BSSID bytes 2-5, else `?`; dBm missing from the scan dump shows `?`; without nmcli, `signal: Linux only (needs nmcli)` goes to stderr with return 1; `-h` follows the wifi/speedtest help layout. Also: `fish -c 'signal -h'` and one live `fish -c signal` on the Pi print sensible output; README has a section listing wifi, cpu, speedtest and signal, shown by grep; `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'` prints 0; `./bootstrap.sh --dry` and `./bootstrap.sh -y` report no changes; work is committed on main per CLAUDE.md with docs/backlog/signal-fish.md deleted in the completing commit, `git status --short` empty, nothing pushed. Guardrails: no test deleted, skipped or weakened; edits only to signal.fish, tests/test_signal.py, README.md, deleting the backlog item, and this goal file; no real neighbour SSIDs or BSSIDs committed; config.local.fish, deploy.py and wifi.fish untouched; no name mapping; tests never call the real tools; no connection changes; no push. Out of scope: any change to wifi.fish, name mapping, showing the LAN MAC, filtering networks. Show the output of each check in the transcript. Or stop after 25 turns and report what remains.
+fish/functions/signal.fish exists and `uv run --with pytest pytest -q` passes (0 failed), including a new tests/test_signal.py that was run and failed once before the function was written. The tests put only fake nmcli, iw and ip on PATH, fed with the fixture from the goal file, and prove: plain `signal` prints exactly the diagram target output in the goal file's Context (header, rows strongest first, aligned label columns SSID, IP, short BSSID, band, `connected`, one block per 5 % rounded) and no table; `signal -t` and `--table` print exactly the table target output (columns SSID, IP, full BSSID, Band, Ch, Signal, dBm, Rx, Tx, same rows and order) and no diagram; every BSSID nmcli lists appears, hidden ones as `(hidden)`; IP comes from a unique IPv4 ip neigh match on BSSID bytes 2-5, else `?`; dBm missing from the scan dump shows `?`; without nmcli, `signal: Linux only (needs nmcli)` goes to stderr with return 1; `-h` follows the wifi/speedtest help layout and lists `-t, --table`. Also: `fish -c 'signal -h'` and live `fish -c signal` and `fish -c 'signal -t'` on the Pi print sensible output; README has a section listing wifi, cpu, speedtest and signal, shown by grep; `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'` prints 0; `./bootstrap.sh --dry` and `./bootstrap.sh -y` report no changes; work is committed on main per CLAUDE.md with docs/backlog/signal-fish.md deleted in the completing commit, `git status --short` empty, nothing pushed. Guardrails: no test deleted, skipped or weakened; edits only to signal.fish, tests/test_signal.py, README.md, deleting the backlog item, and this goal file; no real neighbour SSIDs or BSSIDs committed; config.local.fish, deploy.py and wifi.fish untouched; no name mapping; tests never call the real tools; no connection changes; no push. Out of scope: any change to wifi.fish, name mapping, showing the LAN MAC, filtering networks. Show the output of each check in the transcript. Or stop after 25 turns and report what remains.
 ```
