@@ -114,4 +114,13 @@ linked file.
 
 Why anything is the way it is: `git log --grep='^Decision:'`.
 
+## Functions
+
+Each prints its own help with `-h`.
+
+    wifi       per-process Wi-Fi bandwidth, via bandwhich
+    cpu        system monitor; --temp for temperature, frequency and throttling
+    speedtest  download speed from Hetzner Nuremberg in MB/s and Mbit/s
+    signal     every visible Wi-Fi access point as a signal diagram; -t for a table
+
 :-)
