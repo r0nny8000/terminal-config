@@ -42,14 +42,32 @@ table, so it is obvious which repeater the Pi is on.
   - README: add a new section listing the fish functions `wifi`, `cpu`,
     `speedtest`, `signal` (one line each) and noting that `signal_names`
     lives in `config.local.fish`.
+  - No name fallback: an access point without a `signal_names` match shows
+    its BSSID as the diagram label, not `<IP> <BSSID>` or `? <BSSID>`. This
+    overrides the backlog's acceptance line on names and its example's third
+    diagram row. The table is unchanged: `-` in Device, and the IP column
+    still comes from the bytes 2-5 heuristic (`?` when not unique).
   - Style check: `fish_indent --check (git ls-files "fish/*.fish")` instead
     of the backlog's `fish/**/*.fish`, which also matches the user's ignored
     `fish/config.local.fish` and fails on it today.
-- Expected fixture output: the backlog example exactly, with the 4-space
-  Markdown indent removed. That means the header line, a blank line, diagram
-  rows indented 2 spaces, a blank line, then the table at column 0. Measured:
-  every table row is 98 characters; the diagram's label column is 30 (longest
-  label 26 + 4); bars are 17, 11, 9 blocks for 84, 55, 47 %.
+- Target output for the fixture, exactly (the 4-space Markdown indent below
+  is not part of it). It is the backlog example with the no-fallback diagram:
+  header line, blank line, diagram rows indented 2 spaces, blank line, table
+  at column 0. Measured: every table row is 98 characters; the diagram's
+  label column is longest label + 4 (here 22 + 4 = 26, as the backlog's 30
+  was 26 + 4); bars are 17, 11, 9 blocks for 84, 55, 47 %.
+
+      Signal on 5 GHz for network office:
+
+        Repeater R1, connected    84 %  █████████████████
+        Repeater R2               55 %  ███████████
+        02:AB:CD:77:88:C0         47 %  █████████
+
+      | Device      | BSSID             | IP        | Ch | Signal |    dBm | Rx Mbit/s | Tx Mbit/s |
+      | ----------- | ----------------- | --------- | -- | ------ | ------ | --------- | --------- |
+      | Repeater R1 | 0A:11:22:33:44:51 | 10.9.8.37 | 40 |   84 % |    -50 |    1200.9 |    1200.9 |
+      | Repeater R2 | 02:AB:CD:55:66:C1 | ?         | 40 |   55 % |    -67 |     (270) |     (270) |
+      | -           | 02:AB:CD:77:88:C0 | 10.9.8.1  | 40 |   47 % |    -72 |     (540) |     (540) |
 - Fixture values: SSID `office`, 5200 MHz, channel 40. APs (nmcli
   signal % / rate, iw scan dBm): R1 `0A:11:22:33:44:51` 84 % / -50.00,
   connected; R2 `02:AB:CD:55:66:C1` 55 % / 270 Mbit/s / -67.00; router
@@ -82,12 +100,12 @@ table, so it is obvious which repeater the Pi is on.
 ## Acceptance checklist
 
 - [ ] Tests come first: `tests/test_signal.py` exists and fails before the function exists — proven by `uv run --with pytest pytest -q tests/test_signal.py` run once before writing signal.fish, output shown
-- [ ] With fake nmcli, iw and ip fed the fixture, `signal` prints the backlog's target output exactly (header, diagram strongest first with `connected` marker and one block per 5 % rounded, then the table sorted by signal) — proven by `uv run --with pytest pytest -q tests/test_signal.py` passing
+- [ ] With fake nmcli, iw and ip fed the fixture, `signal` prints the target output in this file's Context exactly (header, diagram strongest first with `connected` marker and one block per 5 % rounded, then the table sorted by signal) — proven by `uv run --with pytest pytest -q tests/test_signal.py` passing
 - [ ] Only the connected SSID on the connected band appears: the fixture's 2.4 GHz `office` APs and the `office-g` APs are left out — proven by the same pytest run
-- [ ] Names come from `signal_names` (case-insensitive BSSID substring); without a match the diagram shows `<IP> <BSSID>`, or `? <BSSID>` when the neighbour table has no unique match, and the table shows `-` — proven by the same pytest run, with a case where R2 is unnamed and absent from `ip neigh`
+- [ ] Names come from `signal_names` (case-insensitive BSSID substring); without a match the diagram label is the BSSID alone (no IP, no `?`) and the table's Device shows `-`; the IP column shows the unique bytes 2-5 match from `ip neigh`, else `?` — proven by the same pytest run, including a case where R2 is unnamed and absent from `ip neigh`
 - [ ] Without nmcli on PATH, `signal` prints `signal: Linux only (needs nmcli)` to stderr and returns 1 — proven by the same pytest run
 - [ ] `signal -h` follows the wifi/speedtest layout (`Usage:`, description, `Runs:`, `Options:` ending with `  -h, --help  Show this help message and exit`) — proven by pytest and by `fish -c 'signal -h'` output shown
-- [ ] Live run on the Pi works — proven by `fish -c signal` output shown, listing the real `office` APs on the connected band with plausible values (names fall back to IP/MAC, since `signal_names` is not set yet)
+- [ ] Live run on the Pi works — proven by `fish -c signal` output shown, listing the real `office` APs on the connected band with plausible values (labels are BSSIDs, since `signal_names` is not set yet)
 - [ ] README has a section listing `wifi`, `cpu`, `speedtest` and `signal`, and mentions `signal_names` in `config.local.fish` — proven by `grep -n -E 'signal_names|speedtest|signal' README.md` output shown
 - [ ] Style — proven by `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'` printing 0
 - [ ] Whole suite passes — proven by `uv run --with pytest pytest -q` (18 or more passed, 0 failed)
@@ -139,5 +157,5 @@ None
 ## Condition
 
 ```text
-fish/functions/signal.fish exists and `uv run --with pytest pytest -q` passes (0 failed), including a new tests/test_signal.py that was run and failed once before the function was written. The tests put only fake nmcli, iw and ip on PATH, fed with the 2026-11-08 fixture from the goal file, and prove: output equals the target output in docs/backlog/signal-fish.md exactly (header, diagram strongest first with `connected` marker and one block per 5 % rounded, then the table sorted by signal); only the connected SSID on the connected band appears (2.4 GHz and office-g APs left out); names come from signal_names, unnamed APs show `<IP> <BSSID>` or `? <BSSID>` in the diagram and `-` in the table; without nmcli, `signal: Linux only (needs nmcli)` goes to stderr with return 1; `-h` follows the wifi/speedtest help layout. Also: `fish -c 'signal -h'` and one live `fish -c signal` on the Pi print sensible output; README lists wifi, cpu, speedtest and signal and mentions signal_names in config.local.fish, shown by grep; `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'` prints 0; `./bootstrap.sh --dry` and `./bootstrap.sh -y` report no changes; work is committed on main per CLAUDE.md with docs/backlog/signal-fish.md deleted in the completing commit, `git status --short` empty, nothing pushed. Guardrails: no test deleted, skipped or weakened; edits only to signal.fish, tests/test_signal.py, README.md, deleting the backlog item, and this goal file; config.local.fish, deploy.py and wifi.fish untouched; tests never call the real tools; no connection changes; no push. Out of scope: any change to wifi.fish. Show the output of each check in the transcript. Or stop after 25 turns and report what remains.
+fish/functions/signal.fish exists and `uv run --with pytest pytest -q` passes (0 failed), including a new tests/test_signal.py that was run and failed once before the function was written. The tests put only fake nmcli, iw and ip on PATH, fed with the 2026-11-08 fixture from the goal file, and prove: output equals the target output in the goal file's Context exactly (header, diagram strongest first with `connected` marker and one block per 5 % rounded, then the table sorted by signal); only the connected SSID on the connected band appears (2.4 GHz and office-g APs left out); names come from signal_names, an unnamed AP shows only its BSSID in the diagram (no IP fallback) and `-` in the table, while the table's IP column keeps the bytes 2-5 match or `?`; without nmcli, `signal: Linux only (needs nmcli)` goes to stderr with return 1; `-h` follows the wifi/speedtest help layout. Also: `fish -c 'signal -h'` and one live `fish -c signal` on the Pi print sensible output; README lists wifi, cpu, speedtest and signal and mentions signal_names in config.local.fish, shown by grep; `fish -c 'fish_indent --check (git ls-files "fish/*.fish") fish/functions/signal.fish; echo $status'` prints 0; `./bootstrap.sh --dry` and `./bootstrap.sh -y` report no changes; work is committed on main per CLAUDE.md with docs/backlog/signal-fish.md deleted in the completing commit, `git status --short` empty, nothing pushed. Guardrails: no test deleted, skipped or weakened; edits only to signal.fish, tests/test_signal.py, README.md, deleting the backlog item, and this goal file; config.local.fish, deploy.py and wifi.fish untouched; tests never call the real tools; no connection changes; no push. Out of scope: any change to wifi.fish. Show the output of each check in the transcript. Or stop after 25 turns and report what remains.
 ```
